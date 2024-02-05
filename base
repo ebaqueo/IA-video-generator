@@ -1,0 +1,36 @@
+ python
+import cv2
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+
+# Función para generar el video a partir del texto
+def generate_video(text, font_size, duration):
+    # Configuración de la fuente y el tamaño del video
+    font = ImageFont.truetype("Arial.ttf", font_size)
+    text_size = font.getsize(text)
+    video_size = (text_size[0] + 20, text_size[1] + 20)
+
+    # Creación del video
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    video = cv2.VideoWriter("output.mp4", fourcc, 30.0, video_size)
+
+    # Generación de cada frame del video
+    for i in range(duration * 30):
+        image = Image.new("RGB", video_size, (255, 255, 255))
+        draw = ImageDraw.Draw(image)
+        frame_text = text + " Frame: " + str(i + 1)
+        text_position = ((video_size[0] - text_size[0]) // 2, (video_size[1] - text_size[1]) // 2)
+        draw.text(text_position, frame_text, font=font, fill=(0, 0, 0))
+        frame = np.array(image)
+        video.write(frame)
+
+    # Liberar recursos
+    video.release()
+
+# Obtener el texto y los parámetros del usuario
+text = input("Ingrese el texto para el video: ")
+font_size = int(input("Ingrese el tamaño de la fuente: "))
+duration = int(input("Ingrese la duración del video en segundos: "))
+
+# Generar el video
+generate_video(text, font_size, duration)
